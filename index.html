@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D-터미널 랜덤 뽑기 (최종)</title>
+<title>D-터미널 & 도감 완성본</title>
 <style>
   body {
     display: flex;
@@ -12,20 +12,27 @@
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #333;
+    background-color: #222;
     font-family: 'NeoDunggeunmo', 'Courier New', Courier, monospace;
+    padding: 20px;
   }
   
+  .main-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; 
+  }
+
+  /* D-터미널 기기 스타일 */
   #device {
     background: linear-gradient(135deg, #e0e4e5, #b8bcc0);
     border: 3px solid #777;
     border-radius: 20px 40px 20px 20px; 
     width: 480px;
     padding: 30px 20px;
-    box-shadow: 
-      inset 5px 5px 10px rgba(255,255,255,0.7), 
-      inset -5px -5px 15px rgba(0,0,0,0.2), 
-      10px 10px 20px rgba(0,0,0,0.5);
+    box-shadow: inset 5px 5px 10px rgba(255,255,255,0.7), inset -5px -5px 15px rgba(0,0,0,0.2), 10px 10px 20px rgba(0,0,0,0.5);
     text-align: center;
   }
 
@@ -35,7 +42,6 @@
     padding: 20px 25px 25px 25px;
     border-radius: 15px 15px 35px 35px;
     margin-bottom: 25px;
-    box-shadow: inset 2px 2px 5px rgba(255,255,255,0.1), 0 4px 8px rgba(0,0,0,0.3);
   }
 
   #screen {
@@ -51,41 +57,11 @@
     box-shadow: inset 3px 3px 10px rgba(0,0,0,0.3);
   }
 
-  #egg-img {
-    width: 80px;
-    height: 110px;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-  }
-
-  #error-text {
-    font-size: 60px;
-    color: #4a8a7a;
-    mix-blend-mode: multiply;
-    display: none;
-  }
-
-  #crest-img {
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
-    mix-blend-mode: multiply; 
-    display: none;
-    animation: blink 0.6s infinite alternate; 
-  }
-
-  @keyframes blink {
-    0% { opacity: 1; }
-    100% { opacity: 0.3; }
-  }
-
-  #digimon-img {
-    width: 280px;  
-    height: 280px; 
-    object-fit: contain;
-    mix-blend-mode: multiply; 
-    display: none; 
-  }
+  #egg-img { width: 80px; height: 110px; object-fit: contain; mix-blend-mode: multiply; }
+  #error-text { font-size: 60px; color: #4a8a7a; mix-blend-mode: multiply; display: none; }
+  #crest-img { width: 150px; height: 150px; object-fit: contain; mix-blend-mode: multiply; display: none; animation: blink 0.6s infinite alternate; }
+  @keyframes blink { 0% { opacity: 1; } 100% { opacity: 0.3; } }
+  #digimon-img { width: 280px; height: 280px; object-fit: contain; mix-blend-mode: multiply; display: none; }
 
   #dialog-box {
     background-color: #f8f9fa;
@@ -97,100 +73,83 @@
     font-size: 14px;
     margin-bottom: 20px;
     line-height: 1.5;
-    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
   }
-  
-  .speaker {
-    font-weight: bold;
-    color: #e74c3c;
-  }
+  .speaker { font-weight: bold; color: #e74c3c; }
 
-  .btn-group {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap; /* 버튼이 많아지면 줄바꿈 되도록 */
-    gap: 10px; 
-  }
-
+  /* 버튼 그룹 */
+  .btn-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
   .btn {
-    background: linear-gradient(to bottom, #e74c3c, #c0392b);
-    color: white;
-    border: 2px solid #8e2a21;
-    border-radius: 20px;
-    padding: 12px 20px;
-    font-weight: bold;
-    font-size: 15px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #7b241c, 0 5px 10px rgba(0,0,0,0.3);
-    transition: all 0.1s;
+    background: linear-gradient(to bottom, #e74c3c, #c0392b); color: white; border: 2px solid #8e2a21;
+    border-radius: 20px; padding: 12px 20px; font-weight: bold; font-size: 15px; cursor: pointer;
+    box-shadow: 0 4px 0 #7b241c; transition: all 0.1s;
   }
-  
-  /* 처음으로 버튼 (파란색) */
-  .btn-reset {
-    background: linear-gradient(to bottom, #3498db, #2980b9);
-    border-color: #1f618d;
-    box-shadow: 0 4px 0 #1a5276, 0 5px 10px rgba(0,0,0,0.3);
-  }
-  .btn-reset:active {
-    box-shadow: 0 0 0 #1a5276, 0 2px 5px rgba(0,0,0,0.3);
+  .btn-reset { background: linear-gradient(to bottom, #3498db, #2980b9); border-color: #1f618d; box-shadow: 0 4px 0 #1a5276; }
+  .btn-bgm { background: linear-gradient(to bottom, #2ecc71, #27ae60); border-color: #1e8449; box-shadow: 0 4px 0 #145a32; }
+  .btn:active { transform: translateY(4px); box-shadow: none; }
+  .btn:disabled { background: #888; border-color: #666; box-shadow: none; cursor: not-allowed; }
+
+  /* 도감 패널 스타일 */
+  #dictionary-panel {
+    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    border: 4px solid #555;
+    border-radius: 15px;
+    width: 320px;
+    min-height: 500px; 
+    padding: 20px;
+    color: #ecf0f1;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
   }
 
-  /* ⭐️ BGM 제어 버튼 (초록색) ⭐️ */
-  .btn-bgm {
-    background: linear-gradient(to bottom, #2ecc71, #27ae60);
-    border-color: #1e8449;
-    box-shadow: 0 4px 0 #145a32, 0 5px 10px rgba(0,0,0,0.3);
-  }
-  .btn-bgm:active {
-    box-shadow: 0 0 0 #145a32, 0 2px 5px rgba(0,0,0,0.3);
+  .dict-header {
+    background: linear-gradient(to bottom, #f39c12, #d35400); color: white; text-align: center; padding: 10px;
+    font-weight: bold; font-size: 18px; border-radius: 5px; margin-bottom: 20px; border: 2px solid #a04000;
   }
 
-  .btn:active {
-    box-shadow: 0 0 0 #7b241c, 0 2px 5px rgba(0,0,0,0.3);
-    transform: translateY(4px);
-  }
-  .btn:disabled {
-    background: #888;
-    border-color: #666;
-    box-shadow: none;
-    cursor: not-allowed;
-    transform: translateY(4px);
+  .dict-row { margin-bottom: 15px; font-size: 15px; border-bottom: 1px dashed #7f8c8d; padding-bottom: 5px; }
+  .dict-label { color: #f1c40f; font-weight: bold; margin-right: 10px; }
+  .dict-desc-box {
+    margin-top: 10px; background-color: #111; padding: 15px; border-radius: 8px; flex-grow: 1; 
+    font-size: 14px; line-height: 1.6; border: 2px inset #000; color: #1abc9c; 
   }
 
-  .footer-text {
-    margin-top: 30px;
-    color: #888;
-    font-size: 12px;
-    text-align: center;
-    line-height: 1.6;
-    text-shadow: 1px 1px 0px rgba(0,0,0,0.5); 
-  }
+  .footer-text { margin-top: 30px; color: #888; font-size: 12px; text-align: center; line-height: 1.6; }
 </style>
 </head>
 <body>
 
-<div id="device">
-  <div id="bezel">
-    <div id="screen">
-      <img id="egg-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120'%3E%3Cpath d='M50 0 C20 0, 10 50, 10 80 C10 110, 30 120, 50 120 C70 120, 90 110, 90 80 C90 50, 80 0, 50 0 Z' fill='%23111' /%3E%3Ctext x='50' y='80' font-family='sans-serif' font-size='50' fill='white' text-anchor='middle' font-weight='bold'%3E?%3C/text%3E%3C/svg%3E" alt="디지타마">
-      
-      <div id="error-text">❌</div>
-      <img id="crest-img" src="" alt="통신 문장">
-      <img id="digimon-img" src="" alt="디지몬 이미지">
+<div class="main-container">
+  <div id="device">
+    <div id="bezel">
+      <div id="screen">
+        <img id="egg-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 120'%3E%3Cpath d='M50 0 C20 0, 10 50, 10 80 C10 110, 30 120, 50 120 C70 120, 90 110, 90 80 C90 50, 80 0, 50 0 Z' fill='%23111' /%3E%3Ctext x='50' y='80' font-family='sans-serif' font-size='50' fill='white' text-anchor='middle' font-weight='bold'%3E?%3C/text%3E%3C/svg%3E" alt="디지타마">
+        <div id="error-text">❌</div>
+        <img id="crest-img" src="" alt="통신 문장">
+        <img id="digimon-img" src="" alt="디지몬 이미지">
+      </div>
+    </div>
+    <div id="bgm-player" style="display: none;"></div>
+    <div id="dialog-box">
+      <span class="speaker">D-터미널:</span><br>
+      <span id="message">디지털 월드와 연결되었습니다. 데이터를 수신할까요?</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn" id="btn-start" onclick="startGacha()">데이터 수신</button>
+      <button class="btn btn-reset" id="btn-reset" onclick="resetGacha()" style="display: none;">처음으로</button>
+      <button class="btn btn-bgm" id="btn-bgm" onclick="toggleBgm()" style="display: none;">🎵 BGM 끄기</button>
     </div>
   </div>
-  
-  <div id="bgm-player" style="display: none;"></div>
-  
-  <div id="dialog-box">
-    <span class="speaker">D-터미널:</span><br>
-    <span id="message">디지털 월드와 연결되었습니다. 데이터를 수신할까요?</span>
-  </div>
-  
-  <div class="btn-group">
-    <button class="btn" id="btn-start" onclick="startGacha()">데이터 수신</button>
-    <button class="btn btn-reset" id="btn-reset" onclick="resetGacha()" style="display: none;">처음으로</button>
-    <button class="btn btn-bgm" id="btn-bgm" onclick="toggleBgm()" style="display: none;">🎵 BGM 끄기</button>
+
+  <div id="dictionary-panel">
+    <div class="dict-header">디지몬 도감 (Analyzer)</div>
+    <div class="dict-row"><span class="dict-label">이름:</span> <span id="dict-name">-</span></div>
+    <div class="dict-row"><span class="dict-label">레벨:</span> <span id="dict-level">-</span></div>
+    <div class="dict-row"><span class="dict-label">타입:</span> <span id="dict-type">-</span></div>
+    <div class="dict-row"><span class="dict-label">속성:</span> <span id="dict-attr">-</span></div>
+    <div style="margin-top: 15px; font-weight: bold; color: #f1c40f;">▶ 특징 및 설명:</div>
+    <div class="dict-desc-box" id="dict-desc">데이터 수신 대기 중...</div>
   </div>
 </div>
 
@@ -200,33 +159,24 @@
 </div>
 
 <script>
-  // --- 1. 유튜브 API 스크립트 불러오기 ---
+  // 유튜브 API 로드
   const tag = document.createElement('script');
   tag.src = "https://www.youtube.com/iframe_api";
   const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
   let player;
-  let hasBgmStarted = false; // BGM이 한 번이라도 시작되었는지 체크
-  let isBgmPlaying = false;  // 현재 BGM이 재생 중인지 체크
+  let hasBgmStarted = false; 
+  let isBgmPlaying = false;  
   const youtubeVideoId = "5BONQ39cP9k";
 
-  // API가 준비되면 플레이어 객체 생성
   function onYouTubeIframeAPIReady() {
     player = new YT.Player('bgm-player', {
-      height: '0',
-      width: '0',
-      videoId: youtubeVideoId,
-      playerVars: {
-        'autoplay': 0, // 브라우저 정책상 0으로 두고 버튼 클릭 시 재생
-        'loop': 1,
-        'playlist': youtubeVideoId,
-        'controls': 0
-      }
+      height: '0', width: '0', videoId: youtubeVideoId,
+      playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': youtubeVideoId, 'controls': 0 }
     });
   }
 
-  // --- 2. 돔 요소 연결 및 변수 선언 ---
   const eggImg = document.getElementById('egg-img');
   const errorText = document.getElementById('error-text');
   const digimonImg = document.getElementById('digimon-img');
@@ -236,9 +186,8 @@
   const btnReset = document.getElementById('btn-reset');
   const btnBgm = document.getElementById('btn-bgm');
 
-  let totalDigimonCount = 1422;
-  let gachaTimeout; 
-
+  const levelDict = { "Fresh": "유아기", "In Training": "유년기", "Rookie": "성장기", "Champion": "성숙기", "Ultimate": "완전체", "Mega": "궁극체", "Armor": "아머체" };
+  const attrDict = { "Vaccine": "백신", "Data": "데이터", "Virus": "바이러스", "Free": "프리", "Variable": "배리어블", "Unknown": "불명" };
   const crestImages = [
     "https://i.namu.wiki/i/a0ausIeRe_g-4xIkK_iHm5qydKwhGVNUemDN393K-U76vi5ABIb80pAkBlRpN8g7LRodPqT33zPx1bkOCv7W0QDjW6S4_NTY-tIdHkqlB7RhUWSrZQBx1QIYStZhmxf5EGWtOXvAjanDH6jpVWTAhw.webp",
     "https://i.namu.wiki/i/7pnEuLU7kkhO10kSO2e-vOGMRw-bg1rD5DtMZe14AzQnlbQUrL42THNN-Ej5yqhivho3CVjcaAzvByK8ZKVmpK3QPK3DehsZW1X8Teh84Q_NxzQ00ztpGMjgsoTspkWH50MwUGa6uuYi1k0FaQUWhg.webp",
@@ -251,94 +200,88 @@
     "https://i.namu.wiki/i/pfWlvErhrjUYZ052AsaOY3pI2132i0BM9h-Ohgp0MvvvpsrZUe_8B87AIRUHyaOhjojwk9WRP7M5wFD9iEMxYke6OkuPqsEHzN7DOmZregOs8LImuxYVzCi4Pjk_Z84MLA4M1GFNr01SRQATmHpalg.webp"
   ];
 
-  // --- 3. BGM 재생/일시정지 토글 함수 ---
-  function toggleBgm() {
-    if (isBgmPlaying) {
-      player.pauseVideo();
-      isBgmPlaying = false;
-      btnBgm.innerText = "🔇 BGM 켜기";
-    } else {
-      player.playVideo();
-      isBgmPlaying = true;
-      btnBgm.innerText = "🎵 BGM 끄기";
-    }
+  async function translateText(text) {
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ko&dt=t&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data[0].map(x => x[0]).join("");
+    } catch (e) { return text; }
   }
 
-  async function fetchDigimonData() {
-      message.innerText = "디지털 월드와 연결되었습니다. 데이터를 수신할까요?";
-      btnStart.disabled = false;
+  function toggleBgm() {
+    if (isBgmPlaying) { player.pauseVideo(); isBgmPlaying = false; btnBgm.innerText = "🔇 BGM 켜기"; }
+    else { player.playVideo(); isBgmPlaying = true; btnBgm.innerText = "🎵 BGM 끄기"; }
   }
 
   async function startGacha() {
     btnReset.style.display = 'block';
+    if (!hasBgmStarted && player) { player.playVideo(); hasBgmStarted = true; isBgmPlaying = true; btnBgm.style.display = 'block'; }
 
-    // ⭐️ 데이터 수신 버튼을 처음 눌렀을 때만 BGM 실행 및 버튼 표시
-    if (!hasBgmStarted && player && typeof player.playVideo === 'function') {
-      player.playVideo();
-      hasBgmStarted = true;
-      isBgmPlaying = true;
-      btnBgm.style.display = 'block'; // 재생 버튼 표시
-    }
+    eggImg.style.display = 'none'; errorText.style.display = 'none'; digimonImg.style.display = 'none';
+    document.getElementById('dict-name').innerText = "분석 중...";
+    document.getElementById('dict-level').innerText = "-";
+    document.getElementById('dict-type').innerText = "-";
+    document.getElementById('dict-attr').innerText = "-";
+    document.getElementById('dict-desc').innerText = "데이터 수신 중...";
 
-    eggImg.style.display = 'none';
-    errorText.style.display = 'none';
-    digimonImg.style.display = 'none';
-    
     const randomCrestIndex = Math.floor(Math.random() * crestImages.length);
     crestImg.src = crestImages[randomCrestIndex];
     crestImg.style.display = 'block'; 
-
     message.innerText = "통신 중입니다... 삐빅-";
     btnStart.disabled = true;
 
     try {
-      const randomId = Math.floor(Math.random() * totalDigimonCount) + 1;
+      const randomId = Math.floor(Math.random() * 1400) + 1; // 안전하게 1400개 범위로 설정
       const response = await fetch(`https://digi-api.com/api/v1/digimon/${randomId}`);
-      
-      if (!response.ok) throw new Error("API 통신 에러");
-
+      if (!response.ok) throw new Error("API Error");
       const digimonData = await response.json();
 
-      gachaTimeout = setTimeout(() => {
+      // ⭐️ 오류 수정 포인트: name은 리스트가 아니라 문자열입니다.
+      const finalName = digimonData.name;
+      const rawLevel = digimonData.levels?.[0]?.level || "Unknown";
+      const korLevel = levelDict[rawLevel] || rawLevel;
+      const type = digimonData.types?.[0]?.type || "불명";
+      const rawAttr = digimonData.attributes?.[0]?.attribute || "Unknown";
+      const korAttr = attrDict[rawAttr] || rawAttr;
+
+      let descText = "설명이 없습니다.";
+      if (digimonData.descriptions?.length > 0) {
+        const enDesc = digimonData.descriptions.find(d => d.language === "en");
+        descText = enDesc ? enDesc.description : digimonData.descriptions[0].description;
+      }
+
+      setTimeout(async () => {
         crestImg.style.display = 'none'; 
         digimonImg.src = digimonData.images[0].href;
         digimonImg.style.display = 'block'; 
+        message.innerHTML = `수신 완료!<br><strong>${finalName}</strong> (${korLevel})`;
         
-        const englishName = digimonData.name;
-        let level = digimonData.levels && digimonData.levels.length > 0 ? digimonData.levels[0].level : "레벨 불명";
+        document.getElementById('dict-name').innerText = finalName;
+        document.getElementById('dict-level').innerText = korLevel;
+        document.getElementById('dict-type').innerText = type;
+        document.getElementById('dict-attr').innerText = korAttr;
 
-        message.innerHTML = `수신 완료!<br><strong>${englishName}</strong> (${level}) 이(가) 나타났다!`;
-        
+        const translatedDesc = await translateText(descText);
+        document.getElementById('dict-desc').innerText = translatedDesc;
+
         btnStart.innerText = "다시 수신하기";
         btnStart.disabled = false;
       }, 1500);
 
-    } catch (error) {
-      message.innerHTML = "오류: 통신이 끊어졌습니다.<br>다시 시도해 주세요.";
-      crestImg.style.display = 'none';
-      errorText.style.display = 'block';
-      btnStart.innerText = "다시 수신하기";
+    } catch (e) {
+      message.innerHTML = "오류: 통신이 끊어졌습니다.";
+      crestImg.style.display = 'none'; errorText.style.display = 'block';
       btnStart.disabled = false;
+      document.getElementById('dict-desc').innerText = "데이터 수신 실패";
     }
   }
 
   function resetGacha() {
-    clearTimeout(gachaTimeout);
-
-    digimonImg.style.display = 'none';
-    crestImg.style.display = 'none';
-    errorText.style.display = 'none';
-    eggImg.style.display = ''; 
-
-    message.innerText = "디지털 월드와 연결되었습니다. 데이터를 수신할까요?";
-    btnStart.innerText = "데이터 수신";
-    btnStart.disabled = false;
-    btnReset.style.display = 'none';
-    // BGM 버튼과 음악은 계속 유지되므로 따로 숨기거나 멈추지 않습니다.
+    digimonImg.style.display = 'none'; crestImg.style.display = 'none'; errorText.style.display = 'none'; eggImg.style.display = ''; 
+    message.innerText = "데이터를 수신할까요?";
+    btnStart.innerText = "데이터 수신"; btnReset.style.display = 'none';
   }
-
-  fetchDigimonData();
 </script>
-
 </body>
 </html>
