@@ -7,7 +7,6 @@
 <style>
   body {
     display: flex;
-    /* ⭐️ 기기와 하단 텍스트를 위아래로 세로 배치하기 위해 추가 */
     flex-direction: column; 
     justify-content: center;
     align-items: center;
@@ -109,7 +108,8 @@
   .btn-group {
     display: flex;
     justify-content: center;
-    gap: 15px; 
+    flex-wrap: wrap; /* 버튼이 많아지면 줄바꿈 되도록 */
+    gap: 10px; 
   }
 
   .btn {
@@ -117,14 +117,15 @@
     color: white;
     border: 2px solid #8e2a21;
     border-radius: 20px;
-    padding: 12px 25px;
+    padding: 12px 20px;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
     box-shadow: 0 4px 0 #7b241c, 0 5px 10px rgba(0,0,0,0.3);
     transition: all 0.1s;
   }
   
+  /* 처음으로 버튼 (파란색) */
   .btn-reset {
     background: linear-gradient(to bottom, #3498db, #2980b9);
     border-color: #1f618d;
@@ -132,6 +133,16 @@
   }
   .btn-reset:active {
     box-shadow: 0 0 0 #1a5276, 0 2px 5px rgba(0,0,0,0.3);
+  }
+
+  /* ⭐️ BGM 제어 버튼 (초록색) ⭐️ */
+  .btn-bgm {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border-color: #1e8449;
+    box-shadow: 0 4px 0 #145a32, 0 5px 10px rgba(0,0,0,0.3);
+  }
+  .btn-bgm:active {
+    box-shadow: 0 0 0 #145a32, 0 2px 5px rgba(0,0,0,0.3);
   }
 
   .btn:active {
@@ -146,14 +157,13 @@
     transform: translateY(4px);
   }
 
-  /* ⭐️ 하단 안내 문구 스타일 ⭐️ */
   .footer-text {
     margin-top: 30px;
     color: #888;
     font-size: 12px;
     text-align: center;
     line-height: 1.6;
-    text-shadow: 1px 1px 0px rgba(0,0,0,0.5); /* 어두운 배경에 잘 보이게 약간의 그림자 추가 */
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.5); 
   }
 </style>
 </head>
@@ -180,6 +190,7 @@
   <div class="btn-group">
     <button class="btn" id="btn-start" onclick="startGacha()">데이터 수신</button>
     <button class="btn btn-reset" id="btn-reset" onclick="resetGacha()" style="display: none;">처음으로</button>
+    <button class="btn btn-bgm" id="btn-bgm" onclick="toggleBgm()" style="display: none;">🎵 BGM 끄기</button>
   </div>
 </div>
 
@@ -189,6 +200,33 @@
 </div>
 
 <script>
+  // --- 1. 유튜브 API 스크립트 불러오기 ---
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  let player;
+  let hasBgmStarted = false; // BGM이 한 번이라도 시작되었는지 체크
+  let isBgmPlaying = false;  // 현재 BGM이 재생 중인지 체크
+  const youtubeVideoId = "5BONQ39cP9k";
+
+  // API가 준비되면 플레이어 객체 생성
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('bgm-player', {
+      height: '0',
+      width: '0',
+      videoId: youtubeVideoId,
+      playerVars: {
+        'autoplay': 0, // 브라우저 정책상 0으로 두고 버튼 클릭 시 재생
+        'loop': 1,
+        'playlist': youtubeVideoId,
+        'controls': 0
+      }
+    });
+  }
+
+  // --- 2. 돔 요소 연결 및 변수 선언 ---
   const eggImg = document.getElementById('egg-img');
   const errorText = document.getElementById('error-text');
   const digimonImg = document.getElementById('digimon-img');
@@ -196,12 +234,9 @@
   const message = document.getElementById('message');
   const btnStart = document.getElementById('btn-start');
   const btnReset = document.getElementById('btn-reset');
+  const btnBgm = document.getElementById('btn-bgm');
 
   let totalDigimonCount = 1422;
-  
-  let isBgmPlaying = false; 
-  const youtubeVideoId = "5BONQ39cP9k";
-  
   let gachaTimeout; 
 
   const crestImages = [
@@ -216,6 +251,19 @@
     "https://i.namu.wiki/i/pfWlvErhrjUYZ052AsaOY3pI2132i0BM9h-Ohgp0MvvvpsrZUe_8B87AIRUHyaOhjojwk9WRP7M5wFD9iEMxYke6OkuPqsEHzN7DOmZregOs8LImuxYVzCi4Pjk_Z84MLA4M1GFNr01SRQATmHpalg.webp"
   ];
 
+  // --- 3. BGM 재생/일시정지 토글 함수 ---
+  function toggleBgm() {
+    if (isBgmPlaying) {
+      player.pauseVideo();
+      isBgmPlaying = false;
+      btnBgm.innerText = "🔇 BGM 켜기";
+    } else {
+      player.playVideo();
+      isBgmPlaying = true;
+      btnBgm.innerText = "🎵 BGM 끄기";
+    }
+  }
+
   async function fetchDigimonData() {
       message.innerText = "디지털 월드와 연결되었습니다. 데이터를 수신할까요?";
       btnStart.disabled = false;
@@ -224,10 +272,12 @@
   async function startGacha() {
     btnReset.style.display = 'block';
 
-    if (!isBgmPlaying) {
-      const bgmPlayer = document.getElementById('bgm-player');
-      bgmPlayer.innerHTML = `<iframe width="10" height="10" src="https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&loop=1&playlist=${youtubeVideoId}" frameborder="0" allow="autoplay"></iframe>`;
+    // ⭐️ 데이터 수신 버튼을 처음 눌렀을 때만 BGM 실행 및 버튼 표시
+    if (!hasBgmStarted && player && typeof player.playVideo === 'function') {
+      player.playVideo();
+      hasBgmStarted = true;
       isBgmPlaying = true;
+      btnBgm.style.display = 'block'; // 재생 버튼 표시
     }
 
     eggImg.style.display = 'none';
@@ -245,15 +295,12 @@
       const randomId = Math.floor(Math.random() * totalDigimonCount) + 1;
       const response = await fetch(`https://digi-api.com/api/v1/digimon/${randomId}`);
       
-      if (!response.ok) {
-        throw new Error("API 통신 에러");
-      }
+      if (!response.ok) throw new Error("API 통신 에러");
 
       const digimonData = await response.json();
 
       gachaTimeout = setTimeout(() => {
         crestImg.style.display = 'none'; 
-        
         digimonImg.src = digimonData.images[0].href;
         digimonImg.style.display = 'block'; 
         
@@ -281,14 +328,13 @@
     digimonImg.style.display = 'none';
     crestImg.style.display = 'none';
     errorText.style.display = 'none';
-
     eggImg.style.display = ''; 
 
     message.innerText = "디지털 월드와 연결되었습니다. 데이터를 수신할까요?";
     btnStart.innerText = "데이터 수신";
     btnStart.disabled = false;
-
     btnReset.style.display = 'none';
+    // BGM 버튼과 음악은 계속 유지되므로 따로 숨기거나 멈추지 않습니다.
   }
 
   fetchDigimonData();
