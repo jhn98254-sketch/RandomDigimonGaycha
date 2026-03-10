@@ -105,7 +105,29 @@
   }
 
   /* 나머지 스타일(버튼, 대화창 등)은 기존과 동일 */
-  #egg-img { width: 60px; height: 90px; object-fit: contain; mix-blend-mode: multiply; }
+  /* ⭐️ 디지타마 숨쉬는 애니메이션 적용 ⭐️ */
+  #egg-img { 
+    width: 60px; 
+    height: 90px; 
+    object-fit: contain; 
+    mix-blend-mode: multiply; 
+    
+    /* 애니메이션 실행: 1.5초 동안, 부드럽게, 무한 반복, 왕복 교차 */
+    animation: breathe 1.5s ease-in-out infinite alternate; 
+    
+    /* 알이 공중부양하지 않고 '바닥'을 기준으로 커지도록 설정 */
+    transform-origin: bottom center; 
+  }
+
+  /* 숨쉬는 움직임(크기 변화) 정의 */
+  @keyframes breathe {
+    0% { 
+      transform: scale(1); /* 원래 크기 */
+    }
+    100% { 
+      transform: scale(1.08) translateY(-2px); /* 살짝(1.08배) 커지면서 위로 아주 조금 부풀어 오름 */
+    }
+  }
   #error-text { font-size: 50px; color: #4a8a7a; mix-blend-mode: multiply; display: none; }
   #crest-img { width: 120px; height: 120px; object-fit: contain; mix-blend-mode: multiply; display: none; animation: blink 0.6s infinite alternate; }
   @keyframes blink { 0% { opacity: 1; } 100% { opacity: 0.3; } }
@@ -289,4 +311,5 @@
 </script>
 </body>
 </html>
+
 
